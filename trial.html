@@ -1,0 +1,230 @@
+<html>
+<head>
+<script type="text/javascript" src="Vector_box.js"></script>
+<script type="text/javascript" src="plane_box.js"></script>
+<script type="text/javascript" src="Matrix_box.js"></script>
+<script type="text/javascript" src='obs.js'></script>
+<script type="text/javascript" src='projector.js'></script>
+<script type="text/javascript" src='wall.js'></script>
+<script type="text/javascript" src='cube.js'></script>
+<script type="text/javascript" src='figure.js'></script>
+
+<style>
+canvas{
+  margin-left: 175px ;
+}
+
+</style>
+</head>
+
+<body>
+<div id="button">
+	<button id="left"  onclick="{obs.axis.x=obs.axis.x-.5; call();  }">Right</button>
+	<button id="right"  onclick="{obs.axis.x=obs.axis.x+.5; call();}">Left</button>
+	<button id="down"  onclick="{obs.axis.z=obs.axis.z+.5; call();}">down</button>
+	<button id="up"  onclick="{obs.axis.z=obs.axis.z-.5; call();}">up</button>
+	<input type="range" min="0" max="20"  id="horizontal" onchange="start(this.value,true);">
+	<input type="range" min="0" max="20"  id="vertical" onchange="start(this.value,false);">
+	
+	
+</div>
+<div>
+<button id="change" onclick="change();">Draw</button>
+<button id="draw" onclick="draw();">Rotate</button>
+
+</div>
+<div id="canvas_div"><canvas id="main_canvas" width="800" height="600" style=" border:1px solid black" align=" center" >Ankit_game</canvas></div>
+<script>
+var canvas=document.getElementById("main_canvas");
+var ctx=canvas.getContext("2d");
+var projector= new Projector();
+
+var l=80/2;
+var h=80/2;
+var b=80;
+var angleAlpha=10;
+var angleBeta=10;
+
+function start(a,b){
+var x=1*Math.cos(Math.PI*a/20);
+if (b==true){
+	obs.axis.x=x;y=obs.axis.z;}
+	else{
+		obs.axis.z=x;y=obs.axis.x;}
+
+x*=x;
+y*=y;
+obs.axis.y=1-x-y;
+//obs.pos.print();
+call();
+}
+
+
+var wall=new createWall(l,h);
+
+var img_cons=350;
+var obs=new createObserver();
+obs.pos=new Vector_box(canvas.width/2,-500,canvas.height/2);
+obs.axis=new Vector_box(0,1,0);
+var obs_temp=new createObserver();
+obs_temp=obs;
+var wall_onRotation=new Matrix_box();
+var wall_onPlane=new Matrix_box();		
+var Cube=new cube(400,400,300,l,b,h);
+
+var body=new figure();
+	
+			body.addPoint(400-l,b,300+h);
+			body.numPoint++;
+			body.addPoint(400+l,b,300+h);
+			body.numPoint++;
+			body.addPoint(400+l,b,300-h);
+			body.numPoint++;
+			body.addPoint(400-l,b,300-h);
+			body.numPoint++;
+			//console.log("body");
+			//body.print();
+			//*/
+			
+			
+	call();	
+
+function call(f,u){	
+
+	
+	ctx.clearRect(0,0,canvas.width, canvas.height);
+	ctx.fillStyle="#660033";ctx.globalAlpha = 1;
+	//console.log("call");
+	/*ctx.arc(f,u,10,0,2*Math.PI,true);
+					ctx.closePath();
+					ctx.fill();
+	//*/
+	//body.print();
+	Cube.drawCube(ctx,obs);
+	//wall_onPlane=body.draw(obs,true);
+	//console.log("onPlane");
+	//wall_onPlane.print(4);
+	
+		
+		
+		//body.display(wall_onPlane,ctx,4);
+		
+		
+	//displayWall();
+}
+//function change to cordinate axis for canvas
+	function change_co(v,a,b,z,A){
+				for(var i=0;i<4;i++){
+			if (v==false)
+				A.vec[i].z=z-A.vec[i].z;
+		
+		}
+	}
+		
+		
+
+	
+canvas.addEventListener('mousemove',onMouseMove,false);
+	
+				function onMouseMove(evt){
+				
+					console.log("fucked up");
+				//if(isMouseDown==false)return;
+					x=evt.pageX-canvas.offsetLeft;
+					y=evt.pageY-canvas.offsetTop;
+					
+					//console.log("x"+x+" y "+y);
+					if(x<400+canvas.width/2 && y<300+canvas.height/2){
+					
+						var xyz=Math.cos(Math.PI*(x)/canvas.width);
+						var yxz=Math.cos(Math.PI*(y)/canvas.height);
+						obs.axis.x=xyz;
+						obs.axis.z=yxz;
+						
+						xyz*=xyz;
+						yxz*=yxz;					obs.axis.y=Math.sqrt(Math.abs(1-xyz-yxz));
+					
+					//obs.axis=Obs;
+					//ctx.clearRect(0,0,canvas.width, canvas.height);
+					call();
+					}
+			}	//*/
+			
+/*			
+work on the add point 
+figure addition 
+color swatches to addition
+event on scroll to be worked on
+
+			
+			
+//*/			
+function change_draw(){
+		canvas.addEventListener('mousedown',onMouseDown,false);
+		canvas.addEventListener('mouseup',onMouseUp,false);
+	
+		var isDown=false;
+		var isMove=false;
+		var x0,y0;
+			function onMouseDown(evt){
+				isDown=true;
+				x0=evt.pageX-canvas.offsetLeft;
+				y0=evt.pageY-canvas.offsetTop;
+				canvas.addEventListener('mousemove',onMove,false);
+				
+				
+				//
+				
+			}
+			//function to move 
+		function onMove(evt){
+				
+					
+					isMove=true;
+					x=evt.pageX-canvas.offsetLeft;
+					y=evt.pageY-canvas.offsetTop;
+					
+					if(x<400+canvas.width/2 && y<300+canvas.height/2){
+					//console.log("cor "+x0+" "+y0);
+					//console.log(obs_temp.Angle(1)+"  "+obs_temp.Angle(0));
+						var xyz=obs_temp.Angle(1)-(Math.PI*(x-x0)/canvas.width);
+						var yxz=obs_temp.Angle(0)-(Math.PI*(y-y0)/canvas.height);
+						obs.axis.x=Math.cos(xyz);
+						obs.axis.z=Math.cos(yxz);
+						
+						xyz*=xyz;
+						yxz*=yxz;					obs.axis.y=Math.sqrt(Math.abs(1-xyz-yxz));
+					
+					//obs.axis=Obs;
+					//ctx.clearRect(0,0,canvas.width, canvas.height);
+					call();
+					
+				}
+			}
+		
+		
+			function onMouseUp(evt){
+				
+				canvas.removeEventListener('mousemove',onMove,false);
+				
+				console.log("up");
+				isMove=false;
+				console.log("it is working");
+				obs_temp=obs;
+				
+				//addPoint();//function for addition of point to a plane
+			}
+
+	
+}//change draw ends
+function change(){
+			canvas.removeEventListener('mousemove',onMouseMove,false);
+			change_draw();
+			
+			}
+	function draw(){
+			canvas.addEventListener('mousemove',onMouseMove,false);}
+
+</script>
+</body>
+</html>
